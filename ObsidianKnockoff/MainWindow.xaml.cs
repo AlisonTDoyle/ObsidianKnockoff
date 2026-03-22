@@ -1,4 +1,5 @@
-﻿using ObsidianKnockoff.Services;
+﻿using ObsidianKnockoff.Classes;
+using ObsidianKnockoff.Services;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -24,7 +25,9 @@ namespace ObsidianKnockoff
     {
         // properties
         private FileHandlerService _fileHandlerService;
+
         private ObservableCollection<string> _files = new ObservableCollection<string>();
+        private ObservableCollection<Message> _messages = new ObservableCollection<Message>(); 
 
         public ObservableCollection<string> Files { get { return _files; } }
 
