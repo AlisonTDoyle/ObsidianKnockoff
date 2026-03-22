@@ -5,8 +5,25 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ObsidianKnockoff"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="Obsidian Knockoff" Height="450" Width="800">
     <Grid>
+        <!--layout definitions-->
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="20*"/>
+            <ColumnDefinition Width="60*"/>
+            <ColumnDefinition Width="20*"/>
+        </Grid.ColumnDefinitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="10*"/>
+            <RowDefinition Height="80*"/>
+            <RowDefinition Height="10*"/>
+        </Grid.RowDefinitions>
         
+        <!--column 1 content-->
+        
+        <!--column 2 content-->
+        
+        <!--column 3 content-->
     </Grid>
 </Window>

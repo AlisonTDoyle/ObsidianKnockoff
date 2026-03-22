@@ -4,6 +4,20 @@
              xmlns:local="clr-namespace:ObsidianKnockoff"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-         
+        <!--brand colours-->
+        <Color x:Key="TextColour">#efeef2</Color>
+        <Color x:Key="BackgroundColour">#0c0b0f</Color>
+        <Color x:Key="TileColour">#23212c</Color>
+        <Color x:Key="PrimaryColour">#b0aec2</Color>
+        <Color x:Key="SecondaryColour">#60644a</Color>
+        <Color x:Key="AccentColour">#88a58f</Color>
+
+        <!--brushes-->
+        <SolidColorBrush x:Key="TextBrush" Color="{StaticResource TextColour}"/>
+        <SolidColorBrush x:Key="BackgroundBrush" Color="{StaticResource BackgroundColour}"/>
+        <SolidColorBrush x:Key="TileBrush" Color="{StaticResource TileColour}"/>
+        <SolidColorBrush x:Key="PrimaryBrush" Color="{StaticResource PrimaryColour}"/>
+        <SolidColorBrush x:Key="SecondaryBrush" Color="{StaticResource SecondaryColour}"/>
+        <SolidColorBrush x:Key="AccentBrush" Color="{StaticResource AccentColour}"/>
     </Application.Resources>
 </Application>
