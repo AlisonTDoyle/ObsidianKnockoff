@@ -7,7 +7,7 @@
         <!--brand colours-->
         <Color x:Key="TextColour">#efeef2</Color>
         <Color x:Key="BackgroundColour">#0c0b0f</Color>
-        <Color x:Key="TileColour">#23212c</Color>
+        <Color x:Key="TileColour">#18161d</Color>
         <Color x:Key="PrimaryColour">#b0aec2</Color>
         <Color x:Key="SecondaryColour">#60644a</Color>
         <Color x:Key="AccentColour">#88a58f</Color>

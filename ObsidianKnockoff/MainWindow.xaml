@@ -5,25 +5,123 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ObsidianKnockoff"
         mc:Ignorable="d"
-        Title="Obsidian Knockoff" Height="450" Width="800">
-    <Grid>
+        Title="Obsidian Knockoff" Height="450" Width="800"
+        WindowState="Maximized" Background="{StaticResource BackgroundBrush}"
+          >
+    <Grid Margin="8">
         <!--layout definitions-->
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="20*"/>
-            <ColumnDefinition Width="60*"/>
-            <ColumnDefinition Width="20*"/>
+            <ColumnDefinition Width="24*"/>
+            <ColumnDefinition Width="52*"/>
+            <ColumnDefinition Width="24*"/>
         </Grid.ColumnDefinitions>
 
         <Grid.RowDefinitions>
-            <RowDefinition Height="10*"/>
-            <RowDefinition Height="80*"/>
-            <RowDefinition Height="10*"/>
+            <RowDefinition Height="5*"/>
+            <RowDefinition Height="90*"/>
+            <RowDefinition Height="5*"/>
         </Grid.RowDefinitions>
-        
+
         <!--column 1 content-->
-        
+        <ListBox
+            Background="{StaticResource TileBrush}"
+            BorderBrush="{StaticResource TileBrush}"
+            Grid.Column="0"
+            Grid.Row="0"
+            Grid.RowSpan="2"
+            Margin="8"
+            x:Name="lbxFiles">
+        </ListBox>
+
+        <Button 
+            Background="{StaticResource AccentBrush}"
+            BorderBrush="{StaticResource AccentBrush}"
+            Foreground="{StaticResource BackgroundBrush}"
+            Content="Add New File"
+            Grid.Column="0"
+            Grid.Row="2"
+            Margin="8"
+            x:Name="btnAddNewFile"/>
+
         <!--column 2 content-->
-        
+        <Label
+            Grid.Column="1"
+            Grid.Row="0"
+            Foreground="{StaticResource TextBrush}"
+            Margin="8"
+            x:Name="lblFileName"/>
+
+        <TextBox 
+            Background="{StaticResource TileBrush}"
+            Grid.Column="1"
+            Grid.Row="1"
+            Foreground="{StaticResource TextBrush}"
+            Padding="16"
+            Margin="8"
+            x:Name="tbxFileContent"/>
+
+        <Grid
+            Grid.Column="1"
+            Grid.Row="2">
+            <!--layout definitions-->
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="50*"/>
+                <ColumnDefinition Width="50*"/>
+            </Grid.ColumnDefinitions>
+
+            <!--content-->
+            <Label
+                Foreground="{StaticResource TextBrush}"
+                Grid.Column="0"
+                Margin="8"
+                x:Name="lblSavingStatus"/>
+
+            <Button
+                Background="{StaticResource AccentBrush}"
+                BorderBrush="{StaticResource AccentBrush}"
+                Content="Save File"
+                Foreground="{StaticResource BackgroundBrush}"
+                Grid.Column="1"
+                Margin="8"
+                x:Name="btnManualSave"/>
+        </Grid>
+
         <!--column 3 content-->
+        <ListBox
+            Background="{StaticResource TileBrush}"
+            BorderBrush="{StaticResource TileBrush}"
+            Grid.Column="2"
+            Grid.Row="0"
+            Grid.RowSpan="2"
+            Margin="8"
+            x:Name="lbxMessages">
+        </ListBox>
+
+        <Grid
+            Grid.Column="2"
+            Grid.Row="2">
+            <!--layout definitions-->
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="80*"/>
+                <ColumnDefinition Width="20*"/>
+            </Grid.ColumnDefinitions>
+
+            <!--content-->
+            <TextBox 
+                Background="{StaticResource TextBrush}"
+                VerticalContentAlignment="Center"
+                Margin="8"
+                x:Name="tbxMessage"/>
+
+            <Button
+                Background="{StaticResource AccentBrush}"
+                BorderBrush="{StaticResource AccentBrush}"
+                Foreground="{StaticResource BackgroundBrush}"
+                Grid.Column="1"
+                Margin="8"
+                x:Name="btnSend">
+                <Path Data="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.995 3.178 3.178 4.995.002.002.26.41a.5.5 0 0 0 .886-.083zm-1.833 1.89L6.637 10.07l-.215-.338a.5.5 0 0 0-.154-.154l-.338-.215 7.494-7.494 1.178-.471z" Fill="{StaticResource BackgroundBrush}" Stretch="Uniform" Width="20" Height="20"/>
+            </Button>
+        </Grid>
     </Grid>
 </Window>
