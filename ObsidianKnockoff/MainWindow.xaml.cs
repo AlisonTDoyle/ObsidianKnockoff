@@ -1,5 +1,7 @@
-﻿using System;
+﻿using ObsidianKnockoff.Services;
+using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,9 +22,26 @@ namespace ObsidianKnockoff
     /// </summary>
     public partial class MainWindow : Window
     {
+        // properties
+        private FileHandlerService _fileHandlerService;
+        private ObservableCollection<string> _files = new ObservableCollection<string>();
+
+        public ObservableCollection<string> Files { get { return _files; } }
+
+        // constructors
         public MainWindow()
         {
             InitializeComponent();
+
+            this.DataContext = this;
+            _fileHandlerService = new FileHandlerService("C:/Users/aliso/Downloads");
         }
+
+        // event handlers
+        private void btnAddNewFile_Click(object sender, RoutedEventArgs e)
+        {
+        }
+
+        // methods
     }
 }
