@@ -3,6 +3,7 @@ using ObsidianKnockoff.Services;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -25,13 +26,15 @@ namespace ObsidianKnockoff
     public partial class MainWindow : Window
     {
         // properties
+        private string _currentDirectory = Directory.GetCurrentDirectory();
+
         private FileHandlerService _fileHandlerService;
         private Thread _fileMonitoringThread;
         private Thread _queryHandlingThread;
 
         private ObservableCollection<string> _files = new ObservableCollection<string>();
-        private ObservableCollection<Message> _messages = new ObservableCollection<Message>(); 
-
+        private ObservableCollection<Message> _messages = new ObservableCollection<Message>();
+        
         public ObservableCollection<string> Files { get { return _files; } }
 
         // constructors
@@ -40,7 +43,10 @@ namespace ObsidianKnockoff
             InitializeComponent();
 
             this.DataContext = this;
-            _fileHandlerService = new FileHandlerService("C:/Users/aliso/Downloads");
+
+            string noteVaultPath = _currentDirectory + "\\NotesFolder";
+            Console.WriteLine(noteVaultPath);
+            _fileHandlerService = new FileHandlerService(noteVaultPath);
         }
 
         // event handlers

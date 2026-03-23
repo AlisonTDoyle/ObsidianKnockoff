@@ -35,7 +35,7 @@ namespace ObsidianKnockoff.Services
             foreach (FileInfo file in files)
             {
                 string fileName = (file.Name).Replace(".txt", "");
-                fileNames.Add(file.Name);
+                fileNames.Add(fileName);
             }
 
             return fileNames;

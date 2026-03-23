@@ -34,6 +34,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <RunPostBuildEvent>Always</RunPostBuildEvent>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="SharpVectors.Converters.Wpf, Version=1.8.5.0, Culture=neutral, PublicKeyToken=b532964b8548be77, processorArchitecture=MSIL">
       <HintPath>..\packages\SharpVectors.Wpf.1.8.5\lib\net47\SharpVectors.Converters.Wpf.dll</HintPath>
@@ -77,7 +80,10 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Classes\Message.cs" />
+    <Compile Include="Classes\Note.cs" />
     <Compile Include="Services\FileHandlerService.cs" />
+    <Compile Include="Services\NoteVaultService.cs" />
+    <Compile Include="Services\RagService.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -121,6 +127,11 @@
   <ItemGroup />
   <ItemGroup>
     <Content Include="Assets\send-fill.svg" />
+    <Resource Include="NotesVault\I dont think its for me.txt" />
+    <Resource Include="NotesVault\This party%27s pretty boring.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>xcopy /Y "$(ProjectDir)NotesVault" "$(ProjectDir)\Bin\Debug\NotesFolder\"</PostBuildEvent>
+  </PropertyGroup>
 </Project>
