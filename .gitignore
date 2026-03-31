@@ -362,7 +362,5 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 
-Properties/Settings.Designer.cs
-Properties/Settings.settings
 /ObsidianKnockoff/Properties/Settings.Designer.cs
 /ObsidianKnockoff/Properties/Settings.settings

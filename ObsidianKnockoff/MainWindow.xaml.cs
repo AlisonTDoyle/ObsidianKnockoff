@@ -1,4 +1,4 @@
-﻿using ObsidianKnockoff.Classes;
+﻿using Microsoft.Extensions.AI;
 using ObsidianKnockoff.Services;
 using System;
 using System.Collections.Generic;
@@ -29,11 +29,12 @@ namespace ObsidianKnockoff
         private string _currentDirectory = Directory.GetCurrentDirectory();
 
         private FileHandlerService _fileHandlerService;
+        private AiQueryHandlerService _aiQueryHandlerService;
+
         private Thread _fileMonitoringThread;
         private Thread _queryHandlingThread;
 
         private ObservableCollection<string> _files = new ObservableCollection<string>();
-        private ObservableCollection<Message> _messages = new ObservableCollection<Message>();
         
         public ObservableCollection<string> Files { get { return _files; } }
 
@@ -47,11 +48,37 @@ namespace ObsidianKnockoff
             string noteVaultPath = _currentDirectory + "\\NotesFolder";
             Console.WriteLine(noteVaultPath);
             _fileHandlerService = new FileHandlerService(noteVaultPath);
+
+            _aiQueryHandlerService = new AiQueryHandlerService();
         }
 
         // event handlers
         private void btnAddNewFile_Click(object sender, RoutedEventArgs e)
         {
+        }
+
+        private void tbxMessage_TextChanged(object sender, TextChangedEventArgs e)
+        {
+
+        }
+
+        private void btnSend_Click(object sender, RoutedEventArgs e)
+        {
+            string message = tbxMessage.Text;
+
+            if (!String.IsNullOrEmpty(message))
+            {
+                ChatMessage userMessage = new ChatMessage();
+                userMessage.AuthorName = "User";
+                userMessage.Contents = message;
+
+
+                _aiQueryHandlerService.QueryModel(message);
+            }
+            else
+            {
+                MessageBox.Show("Message Empty");
+            }
         }
 
         // methods
