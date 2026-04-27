@@ -22,7 +22,7 @@ namespace ObsidianKnockoff.Classes
         }
 
         // methods
-        public override ToString()
+        public override string ToString()
         {
             return Title;
         }

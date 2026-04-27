@@ -26,30 +26,11 @@ namespace ObsidianKnockoff
     public partial class MainWindow : Window
     {
         // properties
-        private string _currentDirectory = Directory.GetCurrentDirectory();
-
-        private FileHandlerService _fileHandlerService;
-        private AiQueryHandlerService _aiQueryHandlerService;
-
-        private Thread _fileMonitoringThread;
-        private Thread _queryHandlingThread;
-
-        private ObservableCollection<string> _files = new ObservableCollection<string>();
-        
-        public ObservableCollection<string> Files { get { return _files; } }
 
         // constructors
         public MainWindow()
         {
             InitializeComponent();
-
-            this.DataContext = this;
-
-            string noteVaultPath = _currentDirectory + "\\NotesFolder";
-            Console.WriteLine(noteVaultPath);
-            _fileHandlerService = new FileHandlerService(noteVaultPath);
-
-            _aiQueryHandlerService = new AiQueryHandlerService();
         }
 
         // event handlers
@@ -64,21 +45,7 @@ namespace ObsidianKnockoff
 
         private void btnSend_Click(object sender, RoutedEventArgs e)
         {
-            string message = tbxMessage.Text;
-
-            if (!String.IsNullOrEmpty(message))
-            {
-                ChatMessage userMessage = new ChatMessage();
-                userMessage.AuthorName = "User";
-                userMessage.Contents = message;
-
-
-                _aiQueryHandlerService.QueryModel(message);
-            }
-            else
-            {
-                MessageBox.Show("Message Empty");
-            }
+            
         }
 
         // methods
