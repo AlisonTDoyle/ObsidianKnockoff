@@ -1,10 +1,12 @@
 ﻿using ObsidianKnockoff.Classes;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.IO.IsolatedStorage;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -63,7 +65,7 @@ namespace ObsidianKnockoff.Services
             }
         }
 
-        public List<string> ReadFilesInFolder()
+        public List<string> ReadFilesInFolder(BackgroundWorker worker)
         {
             List<string> fileNames = new List<string>();
 
@@ -77,11 +79,18 @@ namespace ObsidianKnockoff.Services
                         {
                             string searchPattern = $"{NOTES_FOLDER}/*.txt";
                             string[] files = _isolatedStorageFile.GetFileNames(searchPattern);
+                            int totalFiles = files.Length;
 
-                            foreach (string file in files)
+                            for (int i = 0; i < totalFiles; i++)
                             {
-                                string fileName = file.Replace(".txt", "");
+                                string fileName = files[i].Replace(".txt", "");
                                 fileNames.Add(fileName);
+
+                                // report progress back to background worker
+                                double progress = ((float)(i + 1) / totalFiles) * 100;
+                                worker.ReportProgress((int)Math.Round(progress));
+
+                                Thread.Sleep(50); // optional: allow progress to display
                             }
                         }
                     }

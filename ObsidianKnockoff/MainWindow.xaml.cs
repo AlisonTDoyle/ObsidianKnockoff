@@ -1,22 +1,12 @@
-﻿using Microsoft.Extensions.AI;
+﻿using ObsidianKnockoff.Classes;
 using ObsidianKnockoff.Services;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
+using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using System.Windows.Threading;
 
 namespace ObsidianKnockoff
 {
@@ -26,28 +16,90 @@ namespace ObsidianKnockoff
     public partial class MainWindow : Window
     {
         // properties
+        private FileHandlerService _fileHandlerService;
+        private BackgroundWorker _fileViewerBackgroundWorker = new BackgroundWorker();
+        private DispatcherTimer _fileViewerTimer = new DispatcherTimer();
+
+        public ObservableCollection<string> FileNames = new ObservableCollection<string>();
 
         // constructors
         public MainWindow()
         {
             InitializeComponent();
+
+            // set up services
+            _fileHandlerService = new FileHandlerService();
+
+            // set up background worker and timer
+            _fileViewerBackgroundWorker.DoWork += FileViewerBackgroundWorker_DoWork;
+            _fileViewerBackgroundWorker.ProgressChanged += FileViewerBackgroundWorker_ProgressChanged;
+            _fileViewerBackgroundWorker.RunWorkerCompleted += FileViewerBackgroundWorker_RunWorkerCompleted;
+            _fileViewerBackgroundWorker.WorkerReportsProgress = true;
+
+            _fileViewerTimer.Interval = TimeSpan.FromSeconds(5);
+            _fileViewerTimer.Tick += RefreshTimer_Tick;
+            _fileViewerTimer.Start();
         }
 
         // event handlers
-        private void btnAddNewFile_Click(object sender, RoutedEventArgs e)
+        protected override void OnClosed(EventArgs e)
         {
+            // kill timer when app closes
+            _fileViewerTimer.Stop();
+            base.OnClosed(e);
         }
 
-        private void tbxMessage_TextChanged(object sender, TextChangedEventArgs e)
+        private void FileViewerBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
         {
+            BackgroundWorker worker = sender as BackgroundWorker;
 
+            // store result in e.Result to safely pass back to UI thread
+            e.Result = _fileHandlerService.ReadFilesInFolder(worker);
         }
 
-        private void btnSend_Click(object sender, RoutedEventArgs e)
+        private void FileViewerBackgroundWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
-            
+            this.Dispatcher.Invoke(() =>
+            {
+                prgSearchProgress.Value = e.ProgressPercentage;
+            });
+        }
+
+        private void FileViewerBackgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            if (e.Error != null)
+            {
+                MessageBox.Show(e.Error.Message, "Error");
+                return;
+            }
+
+            List<string> fileNames = e.Result as List<string>;
+
+            this.Dispatcher.Invoke(() =>
+            {
+                // update ui with the file list here
+                lbxFiles.ItemsSource = fileNames;
+                prgSearchProgress.Value = 0;
+            });
+        }
+
+        private void RefreshTimer_Tick(object sender, EventArgs e)
+        {
+            // avoid starting a new run if one is already in progress
+            if (!_fileViewerBackgroundWorker.IsBusy)
+            {
+                _fileViewerBackgroundWorker.RunWorkerAsync();
+            }
         }
 
         // methods
+        private void UpdateFileViewer()
+        {
+            string title = tbxFileName.Text;
+            string content = tbxFileContent.Text;
+
+            Note newNote = new Note(title, content);
+            _fileHandlerService.SaveFile(newNote);
+        }
     }
 }

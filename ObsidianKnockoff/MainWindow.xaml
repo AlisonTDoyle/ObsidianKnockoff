@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ObsidianKnockoff"
         mc:Ignorable="d"
-        Title="Obsidian Knockoff" Height="450" Width="800"
+        Title="Obsidian Knockoff" Height="800" Width="1200"
         WindowState="Maximized" Background="{StaticResource BackgroundBrush}"
           >
     <Grid Margin="8">
@@ -35,23 +35,20 @@
             x:Name="lbxFiles">
         </ListBox>
 
-        <Button 
-            Background="{StaticResource AccentBrush}"
-            BorderBrush="{StaticResource AccentBrush}"
-            Foreground="{StaticResource BackgroundBrush}"
-            Content="Add New File"
-            Grid.Column="0"
+        <ProgressBar
             Grid.Row="2"
-            Margin="8"
-            x:Name="btnAddNewFile" Click="btnAddNewFile_Click"/>
+            Margin="0,8,8,0"
+            x:Name="prgSearchProgress"
+            />
 
         <!--column 2 content-->
-        <Label
+        <TextBox
+            Background="{StaticResource TileBrush}"
             Grid.Column="1"
             Grid.Row="0"
             Foreground="{StaticResource TextBrush}"
             Margin="8"
-            x:Name="lblFileName"/>
+            x:Name="tbxFileName"/>
 
         <TextBox 
             Background="{StaticResource TileBrush}"
@@ -77,15 +74,6 @@
                 Grid.Column="0"
                 Margin="8"
                 x:Name="lblSavingStatus"/>
-
-            <Button
-                Background="{StaticResource AccentBrush}"
-                BorderBrush="{StaticResource AccentBrush}"
-                Content="Save File"
-                Foreground="{StaticResource BackgroundBrush}"
-                Grid.Column="1"
-                Margin="8"
-                x:Name="btnManualSave"/>
         </Grid>
 
         <!--column 3 content-->
@@ -113,7 +101,7 @@
                 Background="{StaticResource TextBrush}"
                 VerticalContentAlignment="Center"
                 Margin="8"
-                x:Name="tbxMessage" TextChanged="tbxMessage_TextChanged"/>
+                x:Name="tbxMessage"/>
 
             <Button
                 Background="{StaticResource AccentBrush}"
@@ -121,7 +109,7 @@
                 Foreground="{StaticResource BackgroundBrush}"
                 Grid.Column="1"
                 Margin="8"
-                x:Name="btnSend" Click="btnSend_Click">
+                x:Name="btnSend">
                 <Path Data="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.995 3.178 3.178 4.995.002.002.26.41a.5.5 0 0 0 .886-.083zm-1.833 1.89L6.637 10.07l-.215-.338a.5.5 0 0 0-.154-.154l-.338-.215 7.494-7.494 1.178-.471z" Fill="{StaticResource BackgroundBrush}" Stretch="Uniform" Width="20" Height="20"/>
             </Button>
         </Grid>
