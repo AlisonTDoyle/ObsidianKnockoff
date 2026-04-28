@@ -26,5 +26,13 @@ namespace ObsidianKnockoff.Classes
         {
             return Title;
         }
+
+        public string GetFileName()
+        {
+            string fileName = Title.Replace(" ", "_");
+            fileName = $"{fileName}.txt";
+
+            return fileName;
+        }
     }
 }

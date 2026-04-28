@@ -1,11 +1,12 @@
-﻿using System;
+﻿using ObsidianKnockoff.Classes;
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.IsolatedStorage;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.IO.IsolatedStorage;
-using ObsidianKnockoff.Classes;
+using System.Windows;
 
 namespace ObsidianKnockoff.Services
 {
@@ -25,9 +26,10 @@ namespace ObsidianKnockoff.Services
         }
 
         // methods
-        public void CreateNewFile(Note newNote)
+        public void SaveFile(Note note)
         {
-            string fileName = GetFileName(newNote);
+            string fileName = note.GetFileName();
+            string filePath = $"{NOTES_FOLDER}/{fileName}";
 
             // check if isolated storage was obtained
             if (_isolatedStorageFile != null)
@@ -44,33 +46,53 @@ namespace ObsidianKnockoff.Services
                             _isolatedStorageFile.CreateDirectory(NOTES_FOLDER);
                         }
 
-                        // create storage file
-
+                        // create/write to file
+                        using (IsolatedStorageFileStream stream = _isolatedStorageFile.OpenFile(filePath, FileMode.Create))
+                        {
+                            using (StreamWriter writer = new StreamWriter(stream))
+                            {
+                                writer.Write(note.Content);
+                            }
+                        }
                     }
                     catch (Exception exception)
                     {
-
+                        MessageBox.Show(exception.Message, "Error");
                     }
                 }
             }
         }
 
-        public void ReadInAllFiles()
+        public List<string> ReadFilesInFolder()
         {
+            List<string> fileNames = new List<string>();
 
-        }
+            if (_isolatedStorageFile != null)
+            {
+                lock (fileLock)
+                {
+                    try
+                    {
+                        if (_isolatedStorageFile.DirectoryExists(NOTES_FOLDER))
+                        {
+                            string searchPattern = $"{NOTES_FOLDER}/*.txt";
+                            string[] files = _isolatedStorageFile.GetFileNames(searchPattern);
 
-        public void UpdateFileInformation()
-        {
+                            foreach (string file in files)
+                            {
+                                string fileName = file.Replace(".txt", "");
+                                fileNames.Add(fileName);
+                            }
+                        }
+                    }
+                    catch (Exception exception)
+                    {
+                        MessageBox.Show(exception.Message, "Error");
+                    }
+                }
+            }
 
-        }
-
-        private string GetFileName(Note note)
-        {
-            string fileName = note.Title.Replace(" ", "_");
-            fileName = $"{fileName}.txt";
-
-            return fileName;
+            return fileNames;
         }
     }
 }
