@@ -4,8 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Threading;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Threading;
 
 namespace ObsidianKnockoff
@@ -16,9 +16,16 @@ namespace ObsidianKnockoff
     public partial class MainWindow : Window
     {
         // properties
+        private const string PENDING_SAVE_TEXT = "Pending Save...";
+        private const string SAVING_TEXT = "Saving...";
+        private const string SAVED_TEXT = "Saved!";
+        private const int SAVE_PERIOD_IN_SECONDS = 10;
+
         private FileHandlerService _fileHandlerService;
         private BackgroundWorker _fileViewerBackgroundWorker = new BackgroundWorker();
+        private BackgroundWorker _fileLoaderBackgroundWorker = new BackgroundWorker();
         private DispatcherTimer _fileViewerTimer = new DispatcherTimer();
+        private Timer _saveFileThreadTimer;
 
         public ObservableCollection<string> FileNames = new ObservableCollection<string>();
 
@@ -26,6 +33,9 @@ namespace ObsidianKnockoff
         public MainWindow()
         {
             InitializeComponent();
+
+            // set up ui
+            lblSavingStatus.Content = PENDING_SAVE_TEXT;
 
             // set up services
             _fileHandlerService = new FileHandlerService();
@@ -39,6 +49,14 @@ namespace ObsidianKnockoff
             _fileViewerTimer.Interval = TimeSpan.FromSeconds(5);
             _fileViewerTimer.Tick += RefreshTimer_Tick;
             _fileViewerTimer.Start();
+
+            // set up saving file timer thread
+            _saveFileThreadTimer = new Timer(
+                callback: _ => SaveFile(),
+                state: null,
+                dueTime: TimeSpan.FromSeconds(SAVE_PERIOD_IN_SECONDS),          
+                period: TimeSpan.FromSeconds(SAVE_PERIOD_IN_SECONDS)
+            );
         }
 
         // event handlers
@@ -93,13 +111,47 @@ namespace ObsidianKnockoff
         }
 
         // methods
-        private void UpdateFileViewer()
+        private void SaveFile()
         {
-            string title = tbxFileName.Text;
-            string content = tbxFileContent.Text;
+            string title = "";
+            string content = "";
 
-            Note newNote = new Note(title, content);
-            _fileHandlerService.SaveFile(newNote);
+            Dispatcher.Invoke(() =>
+            {
+                title = tbxFileName.Text;
+                content = tbxFileContent.Text;
+            });
+
+            Console.WriteLine($"Title: {title}, Content: {content}");
+
+            // check if user has entered any details (selected file or creating new one)
+            if (!string.IsNullOrEmpty(title))
+            {
+                // let user know file is being saved
+                Dispatcher.Invoke(() =>
+                {
+                    lblSavingStatus.Content = SAVING_TEXT;
+                });
+
+                Thread.Sleep(1000);
+
+                Note newNote = new Note(title, content);
+                _fileHandlerService.SaveFile(newNote);
+
+                // let user know file has saved
+                Dispatcher.Invoke(() =>
+                {
+                    lblSavingStatus.Content = SAVED_TEXT;
+                });
+
+                Thread.Sleep(1000);
+
+                // return text to pending state
+                Dispatcher.Invoke(() =>
+                {
+                    lblSavingStatus.Content = PENDING_SAVE_TEXT;
+                });
+            }
         }
     }
 }

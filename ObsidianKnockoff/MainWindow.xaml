@@ -59,22 +59,21 @@
             Margin="8"
             x:Name="tbxFileContent"/>
 
-        <Grid
+        <StackPanel
             Grid.Column="1"
-            Grid.Row="2">
-            <!--layout definitions-->
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="50*"/>
-                <ColumnDefinition Width="50*"/>
-            </Grid.ColumnDefinitions>
-
-            <!--content-->
+            Grid.Row="2"
+            Orientation="Horizontal">
+            <Label
+                Foreground="{StaticResource TextBrush}"
+                Grid.Column="0"
+                Margin="8"
+                Content="Status:"/>
             <Label
                 Foreground="{StaticResource TextBrush}"
                 Grid.Column="0"
                 Margin="8"
                 x:Name="lblSavingStatus"/>
-        </Grid>
+        </StackPanel>
 
         <!--column 3 content-->
         <ListBox

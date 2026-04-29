@@ -4,11 +4,9 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.IO.IsolatedStorage;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace ObsidianKnockoff.Services
 {
@@ -65,6 +63,43 @@ namespace ObsidianKnockoff.Services
             }
         }
 
+        public Note ReadNote(string noteName)
+        {
+            Note note = new Note();
+            string fileContent = "";
+            string filePath = $"{NOTES_FOLDER}/{noteName}";
+
+            if (_isolatedStorageFile != null)
+            {
+                lock (fileLock)
+                {
+                    try
+                    {
+                        if (_isolatedStorageFile.DirectoryExists(NOTES_FOLDER))
+                        {
+                            string searchPattern = $"{NOTES_FOLDER}/*.txt";
+                            using (IsolatedStorageFileStream stream = _isolatedStorageFile.OpenFile(filePath, FileMode.Open, FileAccess.Read))
+                            {
+                                using (StreamReader reader = new StreamReader(stream))
+                                {
+                                    fileContent = reader.ReadToEnd();
+                                }
+                            }            
+                        }
+                    }
+                    catch (Exception exception)
+                    {
+                        MessageBox.Show(exception.Message, "Error");
+                    }
+                }
+            }
+
+            note = new Note(fileContent);
+            note.SetNoteTitleFromFileName(noteName);
+
+            return note;
+        }
+
         public List<string> ReadFilesInFolder(BackgroundWorker worker)
         {
             List<string> fileNames = new List<string>();
@@ -83,14 +118,15 @@ namespace ObsidianKnockoff.Services
 
                             for (int i = 0; i < totalFiles; i++)
                             {
-                                string fileName = files[i].Replace(".txt", "");
+                                string fileName = files[i];
                                 fileNames.Add(fileName);
 
                                 // report progress back to background worker
                                 double progress = ((float)(i + 1) / totalFiles) * 100;
                                 worker.ReportProgress((int)Math.Round(progress));
 
-                                Thread.Sleep(50); // optional: allow progress to display
+                                // sleep for half a second to show progress
+                                Thread.Sleep(500);
                             }
                         }
                     }
