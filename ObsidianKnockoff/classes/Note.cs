@@ -42,7 +42,7 @@ namespace ObsidianKnockoff.Classes
 
         public void SetNoteTitleFromFileName(string fileName)
         {
-            string title = fileName.Replace("_", "").Replace(".txt", "");
+            string title = fileName.Replace("_", " ").Replace(".txt", "");
             title = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(title);
 
             Title = title;

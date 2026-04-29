@@ -19,11 +19,11 @@ namespace ObsidianKnockoff
         private const string PENDING_SAVE_TEXT = "Pending Save...";
         private const string SAVING_TEXT = "Saving...";
         private const string SAVED_TEXT = "Saved!";
+        private const int FILE_VIEWER_REFRESH_IN_SECONDS = 10;
         private const int SAVE_PERIOD_IN_SECONDS = 10;
 
         private FileHandlerService _fileHandlerService;
         private BackgroundWorker _fileViewerBackgroundWorker = new BackgroundWorker();
-        private BackgroundWorker _fileLoaderBackgroundWorker = new BackgroundWorker();
         private DispatcherTimer _fileViewerTimer = new DispatcherTimer();
         private Timer _saveFileThreadTimer;
 
@@ -46,7 +46,7 @@ namespace ObsidianKnockoff
             _fileViewerBackgroundWorker.RunWorkerCompleted += FileViewerBackgroundWorker_RunWorkerCompleted;
             _fileViewerBackgroundWorker.WorkerReportsProgress = true;
 
-            _fileViewerTimer.Interval = TimeSpan.FromSeconds(5);
+            _fileViewerTimer.Interval = TimeSpan.FromSeconds(FILE_VIEWER_REFRESH_IN_SECONDS);
             _fileViewerTimer.Tick += RefreshTimer_Tick;
             _fileViewerTimer.Start();
 
@@ -54,7 +54,7 @@ namespace ObsidianKnockoff
             _saveFileThreadTimer = new Timer(
                 callback: _ => SaveFile(),
                 state: null,
-                dueTime: TimeSpan.FromSeconds(SAVE_PERIOD_IN_SECONDS),          
+                dueTime: TimeSpan.FromSeconds(SAVE_PERIOD_IN_SECONDS),
                 period: TimeSpan.FromSeconds(SAVE_PERIOD_IN_SECONDS)
             );
         }
@@ -110,6 +110,22 @@ namespace ObsidianKnockoff
             }
         }
 
+        private void lbxFiles_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            // capture selected file's name
+            string fileName = lbxFiles.SelectedItem.ToString();
+
+            // only creating thread here as we dont need it for a long time, just long enough to get the file
+            Thread fetchFileThread = new Thread(() =>
+            {
+                FetchAndDisplaySelectedFile(fileName);
+            });
+            fetchFileThread.IsBackground = true;
+            fetchFileThread.Priority = ThreadPriority.Normal;
+
+            fetchFileThread.Start();
+        }
+
         // methods
         private void SaveFile()
         {
@@ -152,6 +168,19 @@ namespace ObsidianKnockoff
                     lblSavingStatus.Content = PENDING_SAVE_TEXT;
                 });
             }
+        }
+
+        private void FetchAndDisplaySelectedFile(string fileName)
+        {
+            // find file
+            Note selectedNote = _fileHandlerService.ReadNote(fileName);
+
+            // display file
+            this.Dispatcher.Invoke(() =>
+            {
+                tbxFileName.Text = selectedNote.Title;
+                tbxFileContent.Text = selectedNote.Content;
+            });
         }
     }
 }

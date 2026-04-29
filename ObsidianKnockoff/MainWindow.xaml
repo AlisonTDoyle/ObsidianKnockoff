@@ -32,7 +32,7 @@
             Grid.RowSpan="2"
             ItemsSource="{Binding Path=Files}"
             Margin="8"
-            x:Name="lbxFiles">
+            x:Name="lbxFiles" SelectionChanged="lbxFiles_SelectionChanged">
         </ListBox>
 
         <ProgressBar
