@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.IO.IsolatedStorage;
+using System.Linq;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
@@ -154,6 +155,40 @@ namespace ObsidianKnockoff.Services
             }
 
             return fileNames;
+        }
+
+        public List<Note> SearchNotes(string query)
+        {
+            List<Note> matchingNotes = new List<Note>();
+            string[] keywords = query.ToLower().Split(' ');
+
+            Monitor.Enter(_fileLock);
+            try
+            {
+                while (_isSaving) Monitor.Wait(_fileLock);
+
+                if (_isolatedStorageFile.DirectoryExists(NOTES_FOLDER))
+                {
+                    string[] files = _isolatedStorageFile.GetFileNames($"{NOTES_FOLDER}/*.txt");
+
+                    foreach (string fileName in files)
+                    {
+                        Note note = ReadNote(fileName);
+                        string noteText = note.Content.ToLower();
+
+                        // include note if any keyword matches
+                        bool isRelevant = keywords.Any(k => noteText.Contains(k));
+                        if (isRelevant)
+                            matchingNotes.Add(note);
+                    }
+                }
+            }
+            finally
+            {
+                Monitor.Exit(_fileLock);
+            }
+
+            return matchingNotes;
         }
     }
 }

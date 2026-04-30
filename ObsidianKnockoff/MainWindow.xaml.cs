@@ -23,11 +23,13 @@ namespace ObsidianKnockoff
         private const int SAVE_PERIOD_IN_SECONDS = 10;
 
         private FileHandlerService _fileHandlerService;
+        private AiQueryHandlerService _aiQueryHandlerService;
         private BackgroundWorker _fileViewerBackgroundWorker = new BackgroundWorker();
         private DispatcherTimer _fileViewerTimer = new DispatcherTimer();
         private Timer _saveFileThreadTimer;
 
         public ObservableCollection<string> FileNames = new ObservableCollection<string>();
+        public ObservableCollection<string> Messages = new ObservableCollection<string>();
 
         // constructors
         public MainWindow()
@@ -36,9 +38,11 @@ namespace ObsidianKnockoff
 
             // set up ui
             lblSavingStatus.Content = PENDING_SAVE_TEXT;
+            DataContext = this;
 
             // set up services
             _fileHandlerService = new FileHandlerService();
+            _aiQueryHandlerService = new AiQueryHandlerService();
 
             // set up background worker and timer
             _fileViewerBackgroundWorker.DoWork += FileViewerBackgroundWorker_DoWork;
@@ -122,8 +126,31 @@ namespace ObsidianKnockoff
             });
             fetchFileThread.IsBackground = true;
             fetchFileThread.Priority = ThreadPriority.Normal;
+            fetchFileThread.Name = "Fetch AI Thread";
 
             fetchFileThread.Start();
+        }
+
+        private void btnSend_Click(object sender, RoutedEventArgs e)
+        {
+            string query = tbxMessage.Text;
+
+            if (!string.IsNullOrEmpty(query))
+            {
+                List<Note> relevantNotes = _fileHandlerService.SearchNotes(query);
+
+                Thread queryAiThread = new Thread(() =>
+                {
+                    QueryAi(query, relevantNotes);
+                });
+                queryAiThread.Name = "Query AI Thread";
+
+                queryAiThread.Start();
+            }
+            else
+            {
+                MessageBox.Show("No query entered", "Error");
+            }
         }
 
         // methods
@@ -180,6 +207,24 @@ namespace ObsidianKnockoff
             {
                 tbxFileName.Text = selectedNote.Title;
                 tbxFileContent.Text = selectedNote.Content;
+            });
+        }
+
+        private async void QueryAi(string query, List<Note> relevantNotes)
+        {
+            // add user query to listbox
+            Dispatcher.Invoke(() =>
+            {
+                Messages.Add(query);
+            });
+
+            // query ai
+            string response = await _aiQueryHandlerService.QueryWithRag(query, relevantNotes);
+
+            // add response to listbox
+            Dispatcher.Invoke(() =>
+            {
+                Messages.Add(response);
             });
         }
     }

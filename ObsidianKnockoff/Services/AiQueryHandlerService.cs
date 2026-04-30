@@ -1,49 +1,73 @@
-﻿using Microsoft.Extensions.AI;
-using OpenAI.Chat;
-using System;
+﻿using Anthropic.SDK;
+using Anthropic.SDK.Messaging;
+using ObsidianKnockoff.Classes;
 using System.Collections.Generic;
-using System.ClientModel;
-using ChatMessage = Microsoft.Extensions.AI.ChatMessage;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace ObsidianKnockoff.Services
 {
     internal class AiQueryHandlerService
     {
-        //// properties
-        //private IChatClient _chatClient;
-        //private string _apiKey = Properties.Settings.Default.AiApiKey;
-        //private string _modelEndpoint = Properties.Settings.Default.AiModelEndpoint;
-        //private List<ChatMessage> _messageHistory = new List<ChatMessage>();
+        // properties
+        private const string MODEL = "claude-sonnet-4-5";
 
-        //public List<ChatMessage> MessageHistory { get { return _messageHistory; } }
+        private AnthropicClient _client;
+        private string _apiKey = Properties.Settings.Default.AiApiKey;
+        private List<Message> _messageHistory = new List<Message>();
 
-        //// constructors
-        //public AiQueryHandlerService()
-        //{
-        //    // init model
-        //    _chatClient = new ChatClient(
-        //        "o4-mini",
-        //        new ApiKeyCredential(_apiKey),
-        //        new OpenAI.OpenAIClientOptions { Endpoint = new Uri(_modelEndpoint) }
-        //    ).AsIChatClient();
-        //}
+        public List<Message> MessageHistory { get { return _messageHistory; } }
 
-        //// methods
-        //public async Task<ChatMessage> QueryModel(ChatMessage userMessage)
-        //{
-        //    string sender = "Roggenrola";
-        //    string message = "";
+        // constructors
+        public AiQueryHandlerService()
+        {
+            _client = new AnthropicClient(_apiKey);
+        }
 
-        //    // save user message to history
-        //    _messageHistory.Add(userMessage);
+        // methods
+        public async Task<string> QueryWithRag(string userQuestion, List<Note> relevantNotes)
+        {
+            // build context from matching notes
+            StringBuilder context = new StringBuilder();
+            context.AppendLine("Here are some relevant notes from the user's notebook:");
+            context.AppendLine();
 
-        //    // query model and save response
-        //    ChatMessage responseMessage = new ChatMessage();
+            foreach (Note note in relevantNotes)
+            {
+                context.AppendLine($"--- {note.Title} ---");
+                context.AppendLine(note.Content);
+                context.AppendLine();
+            }
 
-        //    _messageHistory.Add(responseMessage);
+            // combine context + question into a single prompt
+            string prompt = $"{context}. Using the notes attached as context, answer this question: {userQuestion}. If the notes don't contain relevant information, say so.";
 
-        //    return responseMessage;
-        //}
+            // add user message to history
+            _messageHistory.Add(new Message
+            {
+                Role = RoleType.User,
+                Content = prompt
+            });
+
+            // send to AI
+            MessageParameters parameters = new MessageParameters
+            {
+                Model = MODEL,
+                MaxTokens = 1024,
+                Messages = _messageHistory
+            };
+
+            MessageResponse response = await _client.Messages.GetClaudeMessageAsync(parameters);
+            string reply = response.Content[0].Text;
+
+            // store reply in history for multi-turn conversation
+            _messageHistory.Add(new Message
+            {
+                Role = RoleType.Assistant,
+                Content = reply
+            });
+
+            return reply;
+        }
     }
 }
